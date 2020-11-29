@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/movie")
+@RequestMapping("/api/v1/user")
 @AllArgsConstructor
 public class UserController
 {
