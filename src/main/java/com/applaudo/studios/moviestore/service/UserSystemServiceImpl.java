@@ -8,6 +8,7 @@ import com.applaudo.studios.moviestore.repository.IMovieRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,8 @@ public class UserSystemServiceImpl implements IUserSystemService
     public String save(UserSystemDto body)
     {
         UserSystem user = this.modelMapper.map(body, UserSystem.class);
+        var passwordHash = new DigestUtils("SHA3-256").digestAsHex(body.getPassword());
+        body.setPassword(passwordHash);
         UserSystem userSaved = this.userSystemRepo.saveAndFlush(user);
         return userSaved.getUsername();
     }
