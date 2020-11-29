@@ -2,7 +2,8 @@ package com.applaudo.studios.moviestore.controller;
 
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
-import com.applaudo.studios.moviestore.service.IMovieService;
+import com.applaudo.studios.moviestore.dto.UserSystemDto;
+import com.applaudo.studios.moviestore.service.IUserSystemService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -16,39 +17,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/movie")
 @AllArgsConstructor
-public class MovieController
+public class UserController
 {
     private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
 
-    private final IMovieService movieService;
+    private final IUserSystemService userSystemService;
 
     @GetMapping("/")
-    public ResponseGenericDto<List<MovieDto>> getAll()
+    public ResponseGenericDto<List<UserSystemDto>> getAll()
     {
-        return new ResponseGenericDto<>(0, "OK", this.movieService.getAll());
+        return new ResponseGenericDto<>(0, "OK", this.userSystemService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseGenericDto<MovieDto> getById(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id) throws NotFoundException
+    public ResponseGenericDto<UserSystemDto> getById(HttpServletRequest httpServletRequest, @PathVariable("id") String id) throws NotFoundException
     {
-        return new ResponseGenericDto<>(0, "OK", this.movieService.getById(id));
+        return new ResponseGenericDto<>(0, "OK", this.userSystemService.getById(id));
     }
 
     @PostMapping("/")
-    public ResponseGenericDto<String> save(HttpServletRequest httpServletRequest, @RequestBody @Valid MovieDto req)
+    public ResponseGenericDto<String> save(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req)
     {
         logger.info("BODY: {}", req);
-        var id = this.movieService.save(req);
+        var id = this.userSystemService.save(req);
         String msg = String.format("The movie with id: %s was saved", id);
         return new ResponseGenericDto<>(0, "OK", msg);
     }
 
     @PutMapping("/{id}")
-    public ResponseGenericDto<MovieDto> update(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id, @RequestBody @Valid MovieDto req) throws NotFoundException
+    public ResponseGenericDto<UserSystemDto> update(HttpServletRequest httpServletRequest, @PathVariable("id") String id, @RequestBody @Valid UserSystemDto req) throws NotFoundException
     {
         logger.info("BODY: {}", req);
         String msg = String.format("The movie with id: %s was updated", id);
-
-        return new ResponseGenericDto<>(0, msg, movieService.update(req, id));
+        return new ResponseGenericDto<>(0, msg, userSystemService.update(req, id));
     }
 }

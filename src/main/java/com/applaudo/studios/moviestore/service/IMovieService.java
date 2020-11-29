@@ -9,7 +9,7 @@ public interface IMovieService
 {
     public List<MovieDto> getAll();
 
-    public MovieDto getById(Integer idMovie);
+    public MovieDto getById(Integer idMovie) throws NotFoundException;
 
     public Integer save(MovieDto body);
 

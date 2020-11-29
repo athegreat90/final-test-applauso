@@ -31,8 +31,17 @@ public class MovieServiceImpl implements IMovieService
     }
 
     @Override
-    public MovieDto getById(Integer idMovie) {
-        return null;
+    public MovieDto getById(Integer idMovie) throws NotFoundException
+    {
+        Optional<Movie> original = this.movieRepo.findById(idMovie);
+        if (original.isPresent())
+        {
+            return this.modelMapper.map(original.get(), MovieDto.class);
+        }
+        else
+        {
+            throw new NotFoundException("The id " + idMovie + " doesn't exists");
+        }
     }
 
     @Override
