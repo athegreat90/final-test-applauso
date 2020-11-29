@@ -3,6 +3,7 @@ package com.applaudo.studios.moviestore.controller;
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.service.IMovieService;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,13 @@ public class MovieController
     @GetMapping("/")
     public ResponseGenericDto<List<MovieDto>> getAll()
     {
-        return new ResponseGenericDto<List<MovieDto>>(0, "OK", this.movieService.getAll());
+        return new ResponseGenericDto<>(0, "OK", this.movieService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseGenericDto<MovieDto> getById(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id)
+    {
+        return new ResponseGenericDto<>(0, "OK", this.movieService.getById(id));
     }
 
     @PostMapping("/")
@@ -33,6 +40,15 @@ public class MovieController
         logger.info("BODY: {}", req);
         var id = this.movieService.save(req);
         String msg = String.format("The movie with id: %s was saved", id);
-        return new ResponseGenericDto<String>(0, "OK", msg);
+        return new ResponseGenericDto<>(0, "OK", msg);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseGenericDto<MovieDto> update(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id, @RequestBody @Valid MovieDto req) throws NotFoundException
+    {
+        logger.info("BODY: {}", req);
+        String msg = String.format("The movie with id: %s was updated", id);
+
+        return new ResponseGenericDto<>(0, msg, movieService.update(req, id));
     }
 }

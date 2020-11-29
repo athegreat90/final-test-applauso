@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.service;
 
 import com.applaudo.studios.moviestore.dto.MovieDto;
+import javassist.NotFoundException;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ public interface IMovieService
 
     public Integer save(MovieDto body);
 
-    public MovieDto update(MovieDto body, Integer idMovie);
+    public MovieDto update(MovieDto body, Integer idMovie) throws NotFoundException;
 
-    public Boolean delete(Integer idMovie);
+    public Boolean delete(Integer idMovie) throws NotFoundException;
 
 }
