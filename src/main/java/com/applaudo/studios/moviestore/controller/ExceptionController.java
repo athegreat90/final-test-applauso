@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.controller;
 
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,14 @@ import javax.validation.UnexpectedTypeException;
 public class ExceptionController
 {
     Logger logger = LoggerFactory.getLogger(ExceptionController.class);
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
+    public ResponseGenericDto<String> manageUnexpectedException(NotFoundException ex, WebRequest request)
+    {
+        logger.error("ERROR UnexpectedTypeException", ex);
+        return new ResponseGenericDto<>(1, "Failed", ex.getMessage());
+    }
 
     @ExceptionHandler(UnexpectedTypeException.class)
     @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
