@@ -1,5 +1,6 @@
 package com.applaudo.studios.moviestore.service;
 
+import com.applaudo.studios.moviestore.controller.MovieController;
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
 import com.applaudo.studios.moviestore.entity.Movie;
@@ -11,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
@@ -21,6 +24,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserSystemServiceImpl implements IUserSystemService
 {
+    private static final Logger logger = LoggerFactory.getLogger(UserSystemServiceImpl.class);
+
     private final IUserSystemRepo userSystemRepo;
     private final ModelMapper modelMapper;
 
@@ -52,7 +57,9 @@ public class UserSystemServiceImpl implements IUserSystemService
     {
         UserSystem user = this.modelMapper.map(body, UserSystem.class);
         var passwordHash = new DigestUtils("SHA3-256").digestAsHex(body.getPassword());
-        body.setPassword(passwordHash);
+        logger.info("DTO: {}", body);
+        user.setPassword(passwordHash);
+        logger.info("Entity: {}", user);
         UserSystem userSaved = this.userSystemRepo.saveAndFlush(user);
         return userSaved.getUsername();
     }
@@ -79,6 +86,7 @@ public class UserSystemServiceImpl implements IUserSystemService
         Optional<UserSystem> original = this.userSystemRepo.findById(username);
         if (original.isPresent())
         {
+            this.userSystemRepo.delete(original.get());
             return Boolean.TRUE;
         }
         else
