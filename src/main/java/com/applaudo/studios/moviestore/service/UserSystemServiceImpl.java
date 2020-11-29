@@ -28,7 +28,7 @@ public class UserSystemServiceImpl implements IUserSystemService
     public List<UserSystemDto> getAll()
     {
         List<UserSystem> userList = this.userSystemRepo.findAll();
-        Type listType = new TypeToken<List<MovieDto>>() {}.getType();
+        Type listType = new TypeToken<List<UserSystemDto>>() {}.getType();
         List<UserSystemDto> result = this.modelMapper.map(userList, listType);
         return result;
     }
