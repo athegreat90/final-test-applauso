@@ -67,7 +67,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     public String save(UserSystemDto body)
     {
         UserSystem user = this.modelMapper.map(body, UserSystem.class);
-        var passwordHash = new DigestUtils("SHA3-256").digestAsHex(body.getPassword());
+        var passwordHash = bcryptEncoder.encode(user.getPassword());
         logger.info("DTO: {}", body);
         user.setPassword(passwordHash);
         logger.info("Entity: {}", user);
