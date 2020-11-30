@@ -1,15 +1,16 @@
 package com.applaudo.studios.moviestore.service;
 
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
+import com.applaudo.studios.moviestore.dto.UserSystemShowDto;
 import javassist.NotFoundException;
 
 import java.util.List;
 
 public interface IUserSystemService
 {
-    public List<UserSystemDto> getAll();
+    public List<UserSystemShowDto> getAll();
 
-    public UserSystemDto getById(String username) throws NotFoundException;
+    public UserSystemShowDto getById(String username) throws NotFoundException;
 
     public String save(UserSystemDto body);
 

@@ -1,11 +1,8 @@
 package com.applaudo.studios.moviestore.service;
 
-import com.applaudo.studios.moviestore.controller.MovieController;
-import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
-import com.applaudo.studios.moviestore.entity.Movie;
+import com.applaudo.studios.moviestore.dto.UserSystemShowDto;
 import com.applaudo.studios.moviestore.entity.UserSystem;
-import com.applaudo.studios.moviestore.repository.IMovieRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -14,37 +11,51 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-@Service
-@AllArgsConstructor
-public class UserSystemServiceImpl implements IUserSystemService
+@Service(value = "userService")
+public class UserSystemServiceImpl implements UserDetailsService, IUserSystemService
 {
     private static final Logger logger = LoggerFactory.getLogger(UserSystemServiceImpl.class);
 
-    private final IUserSystemRepo userSystemRepo;
-    private final ModelMapper modelMapper;
+    @Autowired
+    private IUserSystemRepo userSystemRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private BCryptPasswordEncoder bcryptEncoder;
 
     @Override
-    public List<UserSystemDto> getAll()
+    public List<UserSystemShowDto> getAll()
     {
         List<UserSystem> userList = this.userSystemRepo.findAll();
-        Type listType = new TypeToken<List<UserSystemDto>>() {}.getType();
-        List<UserSystemDto> result = this.modelMapper.map(userList, listType);
+        Type listType = new TypeToken<List<UserSystemShowDto>>() {}.getType();
+        List<UserSystemShowDto> result = this.modelMapper.map(userList, listType);
         return result;
     }
 
     @Override
-    public UserSystemDto getById(String username) throws NotFoundException
+    public UserSystemShowDto getById(String username) throws NotFoundException
     {
         Optional<UserSystem> original = this.userSystemRepo.findById(username);
         if (original.isPresent())
         {
-            return this.modelMapper.map(original.get(), UserSystemDto.class);
+            return this.modelMapper.map(original.get(), UserSystemShowDto.class);
         }
         else
         {
@@ -93,5 +104,27 @@ public class UserSystemServiceImpl implements IUserSystemService
         {
             throw new NotFoundException("The id " + username + " doesn't exists");
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException
+    {
+        var optionalUserSystem = userSystemRepo.findById(s);
+        if (optionalUserSystem.isEmpty())
+        {
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
+        var user = optionalUserSystem.get();
+        return new User(user.getUsername(), user.getPassword(), getAuthority(user));
+    }
+
+    private Set<SimpleGrantedAuthority> getAuthority(UserSystem user)
+    {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role ->
+        {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        });
+        return authorities;
     }
 }
