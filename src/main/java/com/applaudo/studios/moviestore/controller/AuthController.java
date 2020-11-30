@@ -12,13 +12,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RestController
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController
@@ -34,7 +34,6 @@ public class AuthController
     @PostMapping("/signup")
     public ResponseGenericDto<String> save(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req)
     {
-        logger.info("BODY: {}", req);
         var id = this.userSystemService.save(req);
         String msg = String.format("The user with id: %s was saved", id);
         return new ResponseGenericDto<>(0, "OK", msg);
