@@ -5,6 +5,7 @@ import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +17,14 @@ import javax.validation.UnexpectedTypeException;
 public class ExceptionController
 {
     Logger logger = LoggerFactory.getLogger(ExceptionController.class);
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
+    public ResponseGenericDto<String> manageAccessDeniedException(AccessDeniedException ex, WebRequest request)
+    {
+        logger.error("ERROR AccessDeniedException", ex);
+        return new ResponseGenericDto<>(1, "Failed", "Unauthorized");
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)

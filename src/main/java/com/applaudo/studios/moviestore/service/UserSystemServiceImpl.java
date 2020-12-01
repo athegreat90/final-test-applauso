@@ -2,7 +2,10 @@ package com.applaudo.studios.moviestore.service;
 
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
 import com.applaudo.studios.moviestore.dto.UserSystemShowDto;
+import com.applaudo.studios.moviestore.entity.UserRoles;
 import com.applaudo.studios.moviestore.entity.UserSystem;
+import com.applaudo.studios.moviestore.repository.IRoleRepo;
+import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -31,14 +34,23 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
 {
     private static final Logger logger = LoggerFactory.getLogger(UserSystemServiceImpl.class);
 
-    @Autowired
-    private IUserSystemRepo userSystemRepo;
+    private final IUserSystemRepo userSystemRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private BCryptPasswordEncoder bcryptEncoder;
+    private final BCryptPasswordEncoder bcryptEncoder;
+
+    private final IUserRolesRepo iUserRolesRepo;
+
+    private final IRoleRepo iRoleRepo;
+
+    public UserSystemServiceImpl(IUserSystemRepo userSystemRepo, ModelMapper modelMapper, BCryptPasswordEncoder bcryptEncoder, IUserRolesRepo iUserRolesRepo, IRoleRepo iRoleRepo) {
+        this.userSystemRepo = userSystemRepo;
+        this.modelMapper = modelMapper;
+        this.bcryptEncoder = bcryptEncoder;
+        this.iUserRolesRepo = iUserRolesRepo;
+        this.iRoleRepo = iRoleRepo;
+    }
 
     @Override
     public List<UserSystemShowDto> getAll()
@@ -72,6 +84,17 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         user.setPassword(passwordHash);
         logger.info("Entity: {}", user);
         UserSystem userSaved = this.userSystemRepo.saveAndFlush(user);
+
+        if (userSaved != null)
+        {
+            var userRole = new UserRoles();
+            userRole.setUserId(user.getUsername());
+            var role = iRoleRepo.findById(2).get();
+//            userRole.setUserSystemByUserId(user);
+//            userRole.setRoleByRoleId(role);
+            userRole.setRoleId(role.getId());
+            iUserRolesRepo.save(userRole);
+        }
         return userSaved.getUsername();
     }
 
@@ -121,9 +144,13 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     private Set<SimpleGrantedAuthority> getAuthority(UserSystem user)
     {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        user.getRoles().forEach(role ->
+
+//        System.out.println("Roles: " + user.getRoles());
+        List<UserRoles> roles = this.iUserRolesRepo.findUserRolesByUserId(user.getUsername());
+        System.out.println("Roles Consult: " + roles);
+        roles.forEach(role ->
         {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleByRoleId().getName()));
         });
         return authorities;
     }

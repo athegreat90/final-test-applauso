@@ -7,6 +7,7 @@ import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +30,13 @@ public class MovieController
         return new ResponseGenericDto<>(0, "OK", this.movieService.getAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseGenericDto<MovieDto> getById(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id) throws NotFoundException
     {
         return new ResponseGenericDto<>(0, "OK", this.movieService.getById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public ResponseGenericDto<String> save(HttpServletRequest httpServletRequest, @RequestBody @Valid MovieDto req)
     {
@@ -44,6 +46,7 @@ public class MovieController
         return new ResponseGenericDto<>(0, "OK", msg);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseGenericDto<MovieDto> update(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id, @RequestBody @Valid MovieDto req) throws NotFoundException
     {

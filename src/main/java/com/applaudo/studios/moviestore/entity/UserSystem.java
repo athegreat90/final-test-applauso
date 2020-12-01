@@ -1,8 +1,8 @@
 package com.applaudo.studios.moviestore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -10,7 +10,9 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "user_system", schema = "applauso", catalog = "d456p442ibm71f")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSystem
@@ -38,8 +40,14 @@ public class UserSystem
     private Collection<UserRent> userRentsByUsername;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "USER_ROLES", joinColumns = {
-            @JoinColumn(name = "USER_ID") }, inverseJoinColumns = {
-            @JoinColumn(name = "ROLE_ID") })
+    @JoinTable(name = "user_roles",
+    joinColumns =
+    {
+        @JoinColumn(name = "user_id")
+    },
+    inverseJoinColumns =
+    {
+        @JoinColumn(name = "role_id")
+    })
     private Set<Role> roles;
 }

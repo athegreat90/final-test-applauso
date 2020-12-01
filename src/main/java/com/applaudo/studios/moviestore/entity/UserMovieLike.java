@@ -9,24 +9,23 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user_order", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "user_movie_like", schema = "applauso", catalog = "d456p442ibm71f")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserOrder
+public class UserMovieLike
 {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Basic
-    @Column(name = "count", nullable = true, precision = 0)
-    private Double count;
+
     @ManyToOne
     @JoinColumn(name = "username", referencedColumnName = "username", nullable = false)
     private UserSystem userSystemByUsername;
+
     @ManyToOne
     @JoinColumn(name = "id_movie", referencedColumnName = "id", nullable = false)
     private Movie movieByIdMovie;
+
 }

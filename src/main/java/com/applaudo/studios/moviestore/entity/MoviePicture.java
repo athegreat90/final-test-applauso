@@ -3,6 +3,7 @@ package com.applaudo.studios.moviestore.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MoviePicture
 {
     @Id

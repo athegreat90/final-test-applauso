@@ -5,13 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ToString
-public class UserSystemShowDto
+public class UserLikeDto
 {
-    private String username;
-    private String email;
-    private String name;
+    private UserSystemDto user;
+    private List<MovieDto> listMovies;
 }
