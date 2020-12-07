@@ -1,6 +1,5 @@
 package com.applaudo.studios.moviestore.config;
 
-import lombok.AllArgsConstructor;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;

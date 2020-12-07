@@ -1,15 +1,18 @@
 package com.applaudo.studios.moviestore.service;
 
+import com.applaudo.studios.moviestore.config.props.MailProperties;
+import com.applaudo.studios.moviestore.config.props.RedisPropertiesCustom;
+import com.applaudo.studios.moviestore.dto.RecoverPasswordDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
 import com.applaudo.studios.moviestore.dto.UserSystemShowDto;
+import com.applaudo.studios.moviestore.entity.Role;
 import com.applaudo.studios.moviestore.entity.UserRoles;
 import com.applaudo.studios.moviestore.entity.UserSystem;
+import com.applaudo.studios.moviestore.repository.IRedisRepo;
 import com.applaudo.studios.moviestore.repository.IRoleRepo;
 import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import javassist.NotFoundException;
-import lombok.AllArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
@@ -24,15 +27,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service(value = "userService")
 public class UserSystemServiceImpl implements UserDetailsService, IUserSystemService
 {
     private static final Logger logger = LoggerFactory.getLogger(UserSystemServiceImpl.class);
+    public static final String THE_ID = "The id ";
+    public static final String DOESN_T_EXISTS = " doesn't exists";
 
     private final IUserSystemRepo userSystemRepo;
 
@@ -44,12 +46,24 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
 
     private final IRoleRepo iRoleRepo;
 
-    public UserSystemServiceImpl(IUserSystemRepo userSystemRepo, ModelMapper modelMapper, BCryptPasswordEncoder bcryptEncoder, IUserRolesRepo iUserRolesRepo, IRoleRepo iRoleRepo) {
+    private final IEmailService iEmailService;
+
+    private final IRedisRepo iRedisRepo;
+
+    @Autowired
+    private MailProperties mailProperties;
+
+    @Autowired
+    private RedisPropertiesCustom redisPropertiesCustom;
+
+    public UserSystemServiceImpl(IUserSystemRepo userSystemRepo, ModelMapper modelMapper, BCryptPasswordEncoder bcryptEncoder, IUserRolesRepo iUserRolesRepo, IRoleRepo iRoleRepo, IEmailService iEmailService, IRedisRepo iRedisRepo) {
         this.userSystemRepo = userSystemRepo;
         this.modelMapper = modelMapper;
         this.bcryptEncoder = bcryptEncoder;
         this.iUserRolesRepo = iUserRolesRepo;
         this.iRoleRepo = iRoleRepo;
+        this.iEmailService = iEmailService;
+        this.iRedisRepo = iRedisRepo;
     }
 
     @Override
@@ -57,8 +71,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     {
         List<UserSystem> userList = this.userSystemRepo.findAll();
         Type listType = new TypeToken<List<UserSystemShowDto>>() {}.getType();
-        List<UserSystemShowDto> result = this.modelMapper.map(userList, listType);
-        return result;
+        return this.modelMapper.map(userList, listType);
     }
 
     @Override
@@ -71,7 +84,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         }
         else
         {
-            throw new NotFoundException("The id " + username + " doesn't exists");
+            throw new NotFoundException(THE_ID + username + DOESN_T_EXISTS);
         }
     }
 
@@ -80,21 +93,23 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     {
         UserSystem user = this.modelMapper.map(body, UserSystem.class);
         var passwordHash = bcryptEncoder.encode(user.getPassword());
-        logger.info("DTO: {}", body);
+        logger.debug("DTO: {}", body);
         user.setPassword(passwordHash);
-        logger.info("Entity: {}", user);
+        logger.debug("Entity: {}", user);
         UserSystem userSaved = this.userSystemRepo.saveAndFlush(user);
 
-        if (userSaved != null)
+        var userRole = new UserRoles();
+        userRole.setUserId(user.getUsername());
+        var optionalRol = iRoleRepo.findById(2);
+        Role role = new Role();
+
+        if (optionalRol.isPresent())
         {
-            var userRole = new UserRoles();
-            userRole.setUserId(user.getUsername());
-            var role = iRoleRepo.findById(2).get();
-//            userRole.setUserSystemByUserId(user);
-//            userRole.setRoleByRoleId(role);
-            userRole.setRoleId(role.getId());
-            iUserRolesRepo.save(userRole);
+            role = optionalRol.get();
         }
+        userRole.setRoleId(role.getId());
+        iUserRolesRepo.save(userRole);
+
         return userSaved.getUsername();
     }
 
@@ -110,7 +125,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         }
         else
         {
-            throw new NotFoundException("The id " + username + " doesn't exists");
+            throw new NotFoundException(THE_ID + username + DOESN_T_EXISTS);
         }
     }
 
@@ -125,8 +140,46 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         }
         else
         {
-            throw new NotFoundException("The id " + username + " doesn't exists");
+            throw new NotFoundException(THE_ID + username + DOESN_T_EXISTS);
         }
+    }
+
+    @Override
+    public String forgot(UserSystemDto body) throws NotFoundException
+    {
+        var user = this.getById(body.getUsername());
+        var token = String.valueOf(UUID.randomUUID());
+        var redisKey = String.format(redisPropertiesCustom.getKeyUpdate(), user.getUsername());
+        logger.debug("Redis Key Format: {}", redisKey);
+        logger.debug("Redis Token: {}", token);
+        this.iRedisRepo.saveKey(redisKey, token, redisPropertiesCustom.getTimeUpdate());
+        var finalUrl = String.format(mailProperties.getUrlResponse(), user.getUsername(), token);
+        var finalBody = String.format(mailProperties.getForgotTemplate(), finalUrl);
+        logger.debug("Final Body: {}", finalBody);
+        this.iEmailService.sendSimpleMessage(user.getEmail(), "Forgot password", finalBody, mailProperties.getFrom());
+        return "The email send correct";
+    }
+
+    @Override
+    public String recover(RecoverPasswordDto body)
+    {
+        var redisKey = String.format(redisPropertiesCustom.getKeyUpdate(), body.getUsername());
+        var token = this.iRedisRepo.getKey(redisKey);
+        if (token.equals(body.getToken()))
+        {
+            Optional<UserSystem> original = this.userSystemRepo.findById(body.getUsername());
+            if (original.isPresent())
+            {
+                var user = original.get();
+                var passwordHash = bcryptEncoder.encode(user.getPassword());
+                logger.debug("DTO: {}", body);
+                user.setPassword(passwordHash);
+                this.userSystemRepo.saveAndFlush(user);
+                this.iRedisRepo.deleteKey(redisKey);
+                return "Changed Password";
+            }
+        }
+        return "Incorrect Params";
     }
 
     @Override
@@ -144,14 +197,8 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     private Set<SimpleGrantedAuthority> getAuthority(UserSystem user)
     {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-
-//        System.out.println("Roles: " + user.getRoles());
         List<UserRoles> roles = this.iUserRolesRepo.findUserRolesByUserId(user.getUsername());
-        System.out.println("Roles Consult: " + roles);
-        roles.forEach(role ->
-        {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleByRoleId().getName()));
-        });
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleByRoleId().getName())));
         return authorities;
     }
 }

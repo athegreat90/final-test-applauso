@@ -3,7 +3,6 @@ package com.applaudo.studios.moviestore.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "user_roles", schema = "applauso", catalog = "d456p442ibm71f")

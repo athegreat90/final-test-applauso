@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "movie_x_pictures", schema = "applauso", catalog = "d456p442ibm71f")

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "role", schema = "applauso", catalog = "d456p442ibm71f")
@@ -18,7 +17,8 @@ public class Role
 {
     @Id
     @Column(name = "id", nullable = false)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Basic
     @Column(name = "description", nullable = true, length = 200)
     private String description;

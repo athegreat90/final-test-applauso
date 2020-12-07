@@ -16,30 +16,31 @@ import javax.validation.UnexpectedTypeException;
 @RestControllerAdvice
 public class ExceptionController
 {
+    public static final String FAILED = "Failed";
     Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     public ResponseGenericDto<String> manageAccessDeniedException(AccessDeniedException ex, WebRequest request)
     {
         logger.error("ERROR AccessDeniedException", ex);
-        return new ResponseGenericDto<>(1, "Failed", "Unauthorized");
+        return new ResponseGenericDto<>(1, FAILED, "Unauthorized");
     }
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseGenericDto<String> manageUnexpectedException(NotFoundException ex, WebRequest request)
     {
         logger.error("ERROR UnexpectedTypeException", ex);
-        return new ResponseGenericDto<>(1, "Failed", ex.getMessage());
+        return new ResponseGenericDto<>(1, FAILED, ex.getMessage());
     }
 
     @ExceptionHandler(UnexpectedTypeException.class)
-    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
+    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ResponseGenericDto<String> manageUnexpectedException(UnexpectedTypeException ex, WebRequest request)
     {
         logger.error("ERROR UnexpectedTypeException", ex);
-        return new ResponseGenericDto<>(1, "Failed", ex.getMessage());
+        return new ResponseGenericDto<>(1, FAILED, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
@@ -47,6 +48,6 @@ public class ExceptionController
     public ResponseGenericDto<String> manageUnknownError(Exception ex, WebRequest request)
     {
         logger.error("ERROR Exception", ex);
-        return new ResponseGenericDto<>(1, "Failed", ex.getMessage());
+        return new ResponseGenericDto<>(1, FAILED, ex.getMessage());
     }
 }

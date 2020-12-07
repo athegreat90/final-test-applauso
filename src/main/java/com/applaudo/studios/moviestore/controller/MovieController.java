@@ -1,5 +1,6 @@
 package com.applaudo.studios.moviestore.controller;
 
+import com.applaudo.studios.moviestore.dto.CriteriaMovieDto;
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.service.IMovieService;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.applaudo.studios.moviestore.util.Const.HEADER_STRING;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -34,6 +37,21 @@ public class MovieController
     public ResponseGenericDto<MovieDto> getById(HttpServletRequest httpServletRequest, @PathVariable("id") Integer id) throws NotFoundException
     {
         return new ResponseGenericDto<>(0, "OK", this.movieService.getById(id));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/list")
+    public ResponseGenericDto<List<MovieDto>> filter(HttpServletRequest httpServletRequest, @RequestParam(required = false) String name, @RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice, @RequestParam(required = false) Boolean availability, @RequestParam(required = false) Boolean like)
+    {
+        String token = httpServletRequest.getHeader(HEADER_STRING);
+        var criteria = new CriteriaMovieDto();
+        criteria.setName(name);
+        criteria.setMinPrice(minPrice);
+        criteria.setMaxPrice(maxPrice);
+        criteria.setAvailability(availability);
+        criteria.setLiked(like);
+        var list = this.movieService.getByCriteria(criteria, token);
+        return new ResponseGenericDto<>(0, "OK", list);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

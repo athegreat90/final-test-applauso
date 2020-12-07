@@ -1,9 +1,7 @@
 package com.applaudo.studios.moviestore.controller;
 
-import com.applaudo.studios.moviestore.dto.MovieDto;
-import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
-import com.applaudo.studios.moviestore.dto.UserSystemDto;
-import com.applaudo.studios.moviestore.dto.UserSystemShowDto;
+import com.applaudo.studios.moviestore.dto.*;
+import com.applaudo.studios.moviestore.service.IManageRoleService;
 import com.applaudo.studios.moviestore.service.IUserSystemService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -23,8 +21,11 @@ import java.util.List;
 public class UserController
 {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    public static final String BODY = "BODY: {}";
+    public static final String THE_USER_WITH_ID_S_WAS_UPDATED = "The user with id: %s was updated";
 
     private final IUserSystemService userSystemService;
+    private final IManageRoleService iManageRoleService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
@@ -45,8 +46,36 @@ public class UserController
     @PutMapping("/{id}")
     public ResponseGenericDto<UserSystemDto> update(HttpServletRequest httpServletRequest, @PathVariable("id") String id, @RequestBody @Valid UserSystemDto req) throws NotFoundException
     {
-        logger.info("BODY: {}", req);
-        String msg = String.format("The movie with id: %s was updated", id);
-        return new ResponseGenericDto<>(0, msg, userSystemService.update(req, id));
+        logger.info(BODY, req);
+        String msg = String.format(THE_USER_WITH_ID_S_WAS_UPDATED, id);
+        return new ResponseGenericDto<>(0, msg, this.userSystemService.update(req, id));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/role/{id}")
+    public ResponseGenericDto<UserSystemDto> addRole(HttpServletRequest httpServletRequest, @PathVariable("id") String id, @RequestBody @Valid UserRepoReqDto req)
+    {
+        logger.info(BODY, req);
+        String msg = String.format(THE_USER_WITH_ID_S_WAS_UPDATED, id);
+        return new ResponseGenericDto<>(0, msg, this.iManageRoleService.addRole(req.getUserDetail(), req.getRoles()));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/role/{id}")
+    public ResponseGenericDto<UserSystemDto> changeRole(HttpServletRequest httpServletRequest, @PathVariable("id") String id, @RequestBody @Valid UserRepoReqDto req)
+    {
+        logger.info(BODY, req);
+        String msg = String.format(THE_USER_WITH_ID_S_WAS_UPDATED, id);
+        return new ResponseGenericDto<>(0, msg, this.iManageRoleService.updateRole(req.getUserDetail(), req.getRoles()));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/role/delete/{id}")
+    public ResponseGenericDto<UserSystemDto> deleteRole(HttpServletRequest httpServletRequest, @PathVariable("id") String id, @RequestBody @Valid UserRepoReqDto req)
+    {
+        logger.info(BODY, req);
+        String msg = String.format(THE_USER_WITH_ID_S_WAS_UPDATED, id);
+        return new ResponseGenericDto<>(0, msg, this.iManageRoleService.deleteRole(req.getUserDetail(), req.getRoles()));
+    }
+
 }

@@ -2,11 +2,9 @@ package com.applaudo.studios.moviestore.entity;
 
 import lombok.*;
 
-import java.util.Objects;
-import java.util.Set;
-
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_system", schema = "applauso", catalog = "d456p442ibm71f")

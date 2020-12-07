@@ -6,8 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.util.Objects;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_rent", schema = "applauso", catalog = "d456p442ibm71f")

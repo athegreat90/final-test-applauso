@@ -1,13 +1,12 @@
 package com.applaudo.studios.moviestore.controller;
 
 import com.applaudo.studios.moviestore.config.TokenProvider;
+import com.applaudo.studios.moviestore.dto.RecoverPasswordDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
 import com.applaudo.studios.moviestore.service.IUserSystemService;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,33 +22,38 @@ import javax.validation.Valid;
 @AllArgsConstructor
 public class AuthController
 {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
     private final IUserSystemService userSystemService;
-
     private final AuthenticationManager authenticationManager;
-
     private final TokenProvider jwtTokenUtil;
 
     @PostMapping("/signup")
     public ResponseGenericDto<String> save(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req)
     {
         var id = this.userSystemService.save(req);
-        String msg = String.format("The user with id: %s was saved", id);
+        String msg = String.format("The user with username: %s was saved", id);
         return new ResponseGenericDto<>(0, "OK", msg);
     }
 
     @PostMapping("/login")
     public ResponseGenericDto<String> login(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req)
     {
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        req.getUsername(),
-                        req.getPassword()
-                )
-        );
+        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = jwtTokenUtil.generateToken(authentication);
+        final String token = this.jwtTokenUtil.generateToken(authentication);
         return new ResponseGenericDto<>(0, "OK", token);
+    }
+
+    @PostMapping("/forgot")
+    public ResponseGenericDto<String> forgotPassword(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req) throws NotFoundException
+    {
+        var response = this.userSystemService.forgot(req);
+        return new ResponseGenericDto<>(0, "OK", response);
+    }
+
+    @PostMapping("/recover")
+    public ResponseGenericDto<String> recoverPassword(HttpServletRequest httpServletRequest, @RequestBody @Valid RecoverPasswordDto req)
+    {
+        var response = this.userSystemService.recover(req);
+        return new ResponseGenericDto<>(0, "OK", response);
     }
 }
