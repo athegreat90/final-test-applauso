@@ -38,7 +38,7 @@ public class MovieDto
     private Double salePrice;
 
     private Boolean availability;
-    private Collection<MovieXPictures> movieXPicturesById;
+    private Collection<MovieXPicturesDto> movieXPicturesById;
 
     @JsonIgnore
     private Collection<UserRent> userRentsById;
