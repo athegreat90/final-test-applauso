@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.applaudo.studios</groupId>
@@ -19,6 +19,7 @@
         <docker.image.prefix>applauso</docker.image.prefix>
         <docker.image.name>movie-store-sprgbt-lrs</docker.image.name>
         <jacoco-maven-plugin>0.8.6</jacoco-maven-plugin>
+
         <sonar.coverage.exclusions>
             **/dto/*,
             **/entity/*,
@@ -142,6 +143,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+
             <!-- jacoco-maven-plugin. Coverage for Sonarqube -->
             <plugin>
                 <groupId>org.jacoco</groupId>

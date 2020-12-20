@@ -1,6 +1,5 @@
 package com.applaudo.studios.moviestore.dto;
 
-import com.applaudo.studios.moviestore.entity.MovieXPictures;
 import com.applaudo.studios.moviestore.entity.UserRent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

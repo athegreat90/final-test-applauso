@@ -1,16 +1,12 @@
 package com.applaudo.studios.moviestore.entity;
 
-import com.applaudo.studios.moviestore.dto.MovieDto;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class EntityTest
 {

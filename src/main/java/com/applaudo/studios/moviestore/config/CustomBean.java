@@ -1,9 +1,9 @@
 package com.applaudo.studios.moviestore.config;
 
 import com.applaudo.studios.moviestore.config.props.MailProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,20 +17,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Properties;
 
+@Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class CustomBean
 {
-    private static final Logger logger = LoggerFactory.getLogger(CustomBean.class);
-
     private final MailProperties mailProperties;
 
     private final RedisProperties redisProperties;
-
-    public CustomBean(MailProperties mailProperties, RedisProperties redisProperties)
-    {
-        this.mailProperties = mailProperties;
-        this.redisProperties = redisProperties;
-    }
 
     @Bean
     public BCryptPasswordEncoder encoder()
@@ -47,7 +41,7 @@ public class CustomBean
     @Bean
     public JavaMailSender getJavaMailSender()
     {
-        logger.debug("Mail Props: {}", mailProperties);
+        log.debug("Mail Props: {}", mailProperties);
 
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(mailProperties.getHost());
@@ -67,8 +61,8 @@ public class CustomBean
     @Bean
     JedisConnectionFactory jedisConnectionFactory()
     {
-        logger.debug("Redis Host: {}", redisProperties.getHost());
-        logger.debug("Redis Port: {}", redisProperties.getPort());
+        log.debug("Redis Host: {}", redisProperties.getHost());
+        log.debug("Redis Port: {}", redisProperties.getPort());
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
         redisStandaloneConfiguration.setPassword(redisProperties.getPassword());
         return new JedisConnectionFactory(redisStandaloneConfiguration);
@@ -84,7 +78,7 @@ public class CustomBean
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.afterPropertiesSet();
-        logger.debug("RedisTemplate: {}", redisTemplate);
+        log.debug("RedisTemplate: {}", redisTemplate);
         return redisTemplate;
     }
 
