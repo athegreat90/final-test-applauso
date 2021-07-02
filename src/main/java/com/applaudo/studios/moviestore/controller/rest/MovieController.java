@@ -1,9 +1,9 @@
-package com.applaudo.studios.moviestore.controller;
+package com.applaudo.studios.moviestore.controller.rest;
 
 import com.applaudo.studios.moviestore.dto.CriteriaMovieDto;
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
-import com.applaudo.studios.moviestore.service.IMovieService;
+import com.applaudo.studios.moviestore.service.rest.IMovieService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;

@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "user_rent", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "user_rent", schema = "accion_finaltest")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

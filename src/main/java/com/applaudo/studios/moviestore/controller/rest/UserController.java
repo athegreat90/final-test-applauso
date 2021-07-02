@@ -1,8 +1,8 @@
-package com.applaudo.studios.moviestore.controller;
+package com.applaudo.studios.moviestore.controller.rest;
 
 import com.applaudo.studios.moviestore.dto.*;
-import com.applaudo.studios.moviestore.service.IManageRoleService;
-import com.applaudo.studios.moviestore.service.IUserSystemService;
+import com.applaudo.studios.moviestore.service.rest.IManageRoleService;
+import com.applaudo.studios.moviestore.service.rest.IUserSystemService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;

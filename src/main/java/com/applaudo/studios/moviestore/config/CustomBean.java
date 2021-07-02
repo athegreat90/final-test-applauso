@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.config;
 
 import com.applaudo.studios.moviestore.config.props.MailProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -25,6 +26,8 @@ public class CustomBean
     private final MailProperties mailProperties;
 
     private final RedisProperties redisProperties;
+
+    private final ObjectMapper mapper;
 
     @Bean
     public BCryptPasswordEncoder encoder()

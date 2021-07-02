@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IRoleRepo extends JpaRepository<Role, Integer>
 {
-    @Query(value = "SELECT DISTINCT * from applauso.role WHERE name = ?1 LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT * from role WHERE name = ?1 LIMIT 1", nativeQuery = true)
     Role findRoleByName(String name);
 }

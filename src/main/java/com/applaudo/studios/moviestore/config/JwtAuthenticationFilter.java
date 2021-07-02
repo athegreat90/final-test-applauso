@@ -2,6 +2,7 @@ package com.applaudo.studios.moviestore.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import static com.applaudo.studios.moviestore.util.Const.HEADER_STRING;
 import static com.applaudo.studios.moviestore.util.Const.TOKEN_PREFIX;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter
 {
     @Autowired
@@ -44,15 +46,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
             }
             catch (IllegalArgumentException e)
             {
-                logger.error("an error occurred during getting username from token", e);
+                log.error("an error occurred during getting username from token", e);
             }
             catch (ExpiredJwtException e)
             {
-                logger.warn("the token is expired and not valid anymore", e);
+                log.warn("the token is expired and not valid anymore", e);
             }
             catch(SignatureException e)
             {
-                logger.error("Authentication Failed. Username or Password not valid.");
+                log.error("Authentication Failed. Username or Password not valid.");
             }
         }
         else
@@ -62,11 +64,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
         {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            log.info("userDetails ->  {}", userDetails);
             if (jwtTokenUtil.validateToken(authToken, userDetails))
             {
                 UsernamePasswordAuthenticationToken authentication = jwtTokenUtil.getAuthentication(authToken, SecurityContextHolder.getContext().getAuthentication(), userDetails);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                logger.info("authenticated user " + username + ", setting security context");
+                log.info("authenticated user " + username + ", setting security context");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

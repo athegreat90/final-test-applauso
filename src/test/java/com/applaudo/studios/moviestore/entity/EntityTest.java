@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import com.applaudo.studios.moviestore.entity.*;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -26,7 +27,7 @@ class EntityTest
     @Test
     void movieAllArgs()
     {
-        var dto = new Movie(1, "DEMO", "DEMO", 1, 1.2D, 20D, Boolean.TRUE, List.of());
+        var dto = new Movie();
         assertNotNull(dto);
     }
 
@@ -70,13 +71,7 @@ class EntityTest
         assertNotNull(dto.getRentalPrice());
     }
 
-    @Test
-    void movieUser()
-    {
-        var dto = new Movie();
-        dto.setUserRentsById(List.of());
-        assertNotNull(dto.getUserRentsById());
-    }
+
 
     @Test
     void movieStock()
@@ -102,67 +97,6 @@ class EntityTest
         assertNotNull(dto.toString());
     }
 
-    @Test
-    void moviePictureAllArgs()
-    {
-        var entity = new MoviePicture(1, "", List.of());
-        assertNotNull(entity.toString());
-    }
-
-    @Test
-    void moviePictureId()
-    {
-        var entity = new MoviePicture();
-        entity.setId(1);
-        assertNotNull(entity.getId());
-    }
-
-    @Test
-    void moviePictureUrl()
-    {
-        var entity = new MoviePicture();
-        entity.setUrl("");
-        assertNotNull(entity.getUrl());
-    }
-
-    @Test
-    void moviePictureCollection()
-    {
-        var entity = new MoviePicture();
-        entity.setMovieXPicturesById(List.of());
-        assertNotNull(entity.getMovieXPicturesById());
-    }
-
-    @Test
-    void movieXPictureAllArgs()
-    {
-        var entity = new MovieXPictures(1, new Movie(), new MoviePicture());
-        assertNotNull(entity.toString());
-    }
-
-    @Test
-    void movieXPictureId()
-    {
-        var entity = new MovieXPictures();
-        entity.setId(1);
-        assertNotNull(entity.getId());
-    }
-
-    @Test
-    void movieXPictureMovie()
-    {
-        var entity = new MovieXPictures();
-        entity.setMovieByIdMovie(new Movie());
-        assertNotNull(entity.getMovieByIdMovie());
-    }
-
-    @Test
-    void movieXPictureIdPicture()
-    {
-        var entity = new MovieXPictures();
-        entity.setMoviePictureByIdPicture(new MoviePicture());
-        assertNotNull(entity.getMoviePictureByIdPicture());
-    }
 
     @Test
     void roleNoArgs()

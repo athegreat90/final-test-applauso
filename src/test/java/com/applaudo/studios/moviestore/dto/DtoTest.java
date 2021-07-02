@@ -83,13 +83,6 @@ class DtoTest
     }
 
     @Test
-    void movieDtoAllArgs()
-    {
-        var dto = new MovieDto(1, "DEMO", "DEMO", 1, 1.2D, 20D, Boolean.TRUE, List.of(), List.of());
-        assertNotNull(dto);
-    }
-
-    @Test
     void movieDtoId()
     {
         var dto = new MovieDto();
@@ -117,8 +110,8 @@ class DtoTest
     void movieDtoMoviesXPicture()
     {
         var dto = new MovieDto();
-        dto.setMovieXPicturesById(List.of());
-        assertNotNull(dto.getMovieXPicturesById());
+        dto.setMoviePicturesById(List.of());
+        assertNotNull(dto.getMoviePicturesById());
     }
 
     @Test
@@ -135,14 +128,6 @@ class DtoTest
         var dto = new MovieDto();
         dto.setRentalPrice(1.2D);
         assertNotNull(dto.getRentalPrice());
-    }
-
-    @Test
-    void movieDtoUser()
-    {
-        var dto = new MovieDto();
-        dto.setUserRentsById(List.of());
-        assertNotNull(dto.getUserRentsById());
     }
 
     @Test

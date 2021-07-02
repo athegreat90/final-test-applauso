@@ -8,7 +8,10 @@ import com.applaudo.studios.moviestore.entity.Role;
 import com.applaudo.studios.moviestore.repository.IRedisRepo;
 import com.applaudo.studios.moviestore.repository.IRoleRepo;
 import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
+import com.applaudo.studios.moviestore.service.rest.IManageRoleService;
+import com.applaudo.studios.moviestore.service.rest.IUserSystemService;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
+@Slf4j
 class UserSystemServiceImplTest
 {
     public static final String USERNAME = "demo5";
@@ -59,6 +63,7 @@ class UserSystemServiceImplTest
     void getAll()
     {
         var users = this.iUserSystemService.getAll();
+        log.info("{}", users);
         assertNotNull(users);
     }
 
@@ -66,7 +71,7 @@ class UserSystemServiceImplTest
     @Order(2)
     void getById() throws NotFoundException
     {
-        var users = this.iUserSystemService.getById("demo3");
+        var users = this.iUserSystemService.getById(USERNAME);
         assertNotNull(users);
     }
 

@@ -1,10 +1,10 @@
-package com.applaudo.studios.moviestore.controller;
+package com.applaudo.studios.moviestore.controller.rest;
 
 import com.applaudo.studios.moviestore.config.TokenProvider;
 import com.applaudo.studios.moviestore.dto.RecoverPasswordDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
-import com.applaudo.studios.moviestore.service.IUserSystemService;
+import com.applaudo.studios.moviestore.service.rest.IUserSystemService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,16 +31,23 @@ public class AuthController
     {
         var id = this.userSystemService.save(req);
         String msg = String.format("The user with username: %s was saved", id);
+
         return new ResponseGenericDto<>(0, "OK", msg);
     }
 
     @PostMapping("/login")
     public ResponseGenericDto<String> login(HttpServletRequest httpServletRequest, @RequestBody @Valid UserSystemDto req)
     {
+        final String token = authenticate(req);
+        return new ResponseGenericDto<>(0, "OK", token);
+    }
+
+    private String authenticate(UserSystemDto req)
+    {
         final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final String token = this.jwtTokenUtil.generateToken(authentication);
-        return new ResponseGenericDto<>(0, "OK", token);
+        return token;
     }
 
     @PostMapping("/forgot")

@@ -1,4 +1,4 @@
-package com.applaudo.studios.moviestore.service;
+package com.applaudo.studios.moviestore.service.rest;
 
 import com.applaudo.studios.moviestore.config.props.MailProperties;
 import com.applaudo.studios.moviestore.config.props.RedisPropertiesCustom;
@@ -12,11 +12,12 @@ import com.applaudo.studios.moviestore.repository.IRedisRepo;
 import com.applaudo.studios.moviestore.repository.IRoleRepo;
 import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
+import com.applaudo.studios.moviestore.service.IEmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -26,13 +27,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Type;
 import java.util.*;
 
 @Service(value = "userService")
+@Slf4j
 public class UserSystemServiceImpl implements UserDetailsService, IUserSystemService
 {
-    private static final Logger logger = LoggerFactory.getLogger(UserSystemServiceImpl.class);
     public static final String THE_ID = "The id ";
     public static final String DOESN_T_EXISTS = " doesn't exists";
 
@@ -50,6 +52,8 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
 
     private final IRedisRepo iRedisRepo;
 
+    ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MailProperties mailProperties;
 
@@ -64,6 +68,14 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         this.iRoleRepo = iRoleRepo;
         this.iEmailService = iEmailService;
         this.iRedisRepo = iRedisRepo;
+    }
+
+    @PostConstruct
+    private void init()
+    {
+        log.info("Begin Repo");
+        var size = this.iRoleRepo.findAll().size();
+        log.info("Role size: {}", size);
     }
 
     @Override
@@ -93,21 +105,32 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     {
         UserSystem user = this.modelMapper.map(body, UserSystem.class);
         var passwordHash = bcryptEncoder.encode(user.getPassword());
-        logger.debug("DTO: {}", body);
+        log.debug("DTO: {}", body);
         user.setPassword(passwordHash);
-        logger.debug("Entity: {}", user);
+        log.debug("Entity: {}", user);
         UserSystem userSaved = this.userSystemRepo.saveAndFlush(user);
 
+        var optionalRole = iRoleRepo.findById(2);
+        var role = new Role();
+        if (optionalRole.isEmpty())
+        {
+            log.warn("No role found");
+            Role roleNew = new Role();
+            roleNew.setId(2);
+            roleNew.setName("USER");
+            roleNew.setDescription("USER");
+            role = iRoleRepo.saveAndFlush(roleNew);
+            log.warn("Role: {}", role);
+
+        }
+        else
+        {
+            role = optionalRole.get();
+        }
         var userRole = new UserRoles();
         userRole.setUserId(user.getUsername());
-        var optionalRol = iRoleRepo.findById(2);
-        Role role = new Role();
-
-        if (optionalRol.isPresent())
-        {
-            role = optionalRol.get();
-        }
         userRole.setRoleId(role.getId());
+        log.info("UserRole: {}", userRole);
         iUserRolesRepo.save(userRole);
 
         return userSaved.getUsername();
@@ -150,12 +173,12 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
         var user = this.getById(body.getUsername());
         var token = String.valueOf(UUID.randomUUID());
         var redisKey = String.format(redisPropertiesCustom.getKeyUpdate(), user.getUsername());
-        logger.debug("Redis Key Format: {}", redisKey);
-        logger.debug("Redis Token: {}", token);
+        log.debug("Redis Key Format: {}", redisKey);
+        log.debug("Redis Token: {}", token);
         this.iRedisRepo.saveKey(redisKey, token, redisPropertiesCustom.getTimeUpdate());
         var finalUrl = String.format(mailProperties.getUrlResponse(), user.getUsername(), token);
         var finalBody = String.format(mailProperties.getForgotTemplate(), finalUrl);
-        logger.debug("Final Body: {}", finalBody);
+        log.debug("Final Body: {}", finalBody);
         this.iEmailService.sendSimpleMessage(user.getEmail(), "Forgot password", finalBody, mailProperties.getFrom());
         return "The email send correct";
     }
@@ -172,7 +195,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
             {
                 var user = original.get();
                 var passwordHash = bcryptEncoder.encode(user.getPassword());
-                logger.debug("DTO: {}", body);
+                log.debug("DTO: {}", body);
                 user.setPassword(passwordHash);
                 this.userSystemRepo.saveAndFlush(user);
                 this.iRedisRepo.deleteKey(redisKey);

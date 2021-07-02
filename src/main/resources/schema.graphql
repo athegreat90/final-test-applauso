@@ -1,0 +1,20 @@
+schema
+{
+    query: Query
+}
+type Query
+{
+    movies: [Movie]
+    movie(id: Int): Movie
+}
+
+type Movie
+{
+    id: ID
+    name: String
+    description: String
+    stock: Int
+    rentalPrice: Float
+    salePrice: Float
+    availability: Boolean
+}

@@ -1,4 +1,4 @@
-package com.applaudo.studios.moviestore.service;
+package com.applaudo.studios.moviestore.service.rest;
 
 import com.applaudo.studios.moviestore.config.TokenProvider;
 import com.applaudo.studios.moviestore.dto.CriteriaMovieDto;
@@ -185,7 +185,7 @@ public class MovieServiceImpl implements IMovieService
         }
         else
         {
-            throw new NotFoundException(THE_ID + idMovie + DOESN_T_EXISTS);
+            throw new NotFoundException(String.format("%s%d%s", THE_ID, idMovie, DOESN_T_EXISTS));
         }
     }
 }

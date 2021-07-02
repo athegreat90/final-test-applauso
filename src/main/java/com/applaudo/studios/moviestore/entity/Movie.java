@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "movie", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "movie", schema = "accion_finaltest")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,6 +38,10 @@ public class Movie
     @Basic
     @Column(name = "availability", nullable = true)
     private Boolean availability;
+
+    @OneToMany(mappedBy = "movieByIdMovie_0")
+    private Collection<MoviePicture> moviePicturesById;
+
     @OneToMany(mappedBy = "movieByIdMovie", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<UserRent> userRentsById;
 }

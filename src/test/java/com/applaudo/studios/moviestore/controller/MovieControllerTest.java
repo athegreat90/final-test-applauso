@@ -1,34 +1,25 @@
 package com.applaudo.studios.moviestore.controller;
 
+import com.applaudo.studios.moviestore.controller.rest.MovieController;
 import com.applaudo.studios.moviestore.dto.MovieDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.lang.reflect.Type;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.web.servlet.function.RequestPredicates.contentType;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -134,7 +125,8 @@ class MovieControllerTest
         var criteriaResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/movie/list?name=DEMO").header("Authorization", "Bearer " + token).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
         var criteriaResponseBody = criteriaResponse.andReturn().getResponse().getContentAsString();
         ResponseGenericDto<List<MovieDto>> listMovies = mapper.readValue(criteriaResponseBody, ResponseGenericDto.class);
-        var moviesString= mapper.writeValueAsString(listMovies.getBody().get(0));
+        List<MovieDto> body = listMovies.getBody();
+        var moviesString= mapper.writeValueAsString(body);
         MovieDto movie = mapper.readValue(moviesString, MovieDto.class);
         url = "/api/v1/movie/" + movie.getId();
 

@@ -3,8 +3,7 @@ package com.applaudo.studios.moviestore.service;
 import com.applaudo.studios.moviestore.config.TokenProvider;
 import com.applaudo.studios.moviestore.dto.CriteriaMovieDto;
 import com.applaudo.studios.moviestore.dto.MovieDto;
-import com.applaudo.studios.moviestore.entity.UserRoles;
-import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
+import com.applaudo.studios.moviestore.service.rest.IMovieService;
 import javassist.NotFoundException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -14,8 +13,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;

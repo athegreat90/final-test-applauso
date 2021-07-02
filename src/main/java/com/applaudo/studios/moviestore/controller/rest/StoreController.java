@@ -1,10 +1,10 @@
-package com.applaudo.studios.moviestore.controller;
+package com.applaudo.studios.moviestore.controller.rest;
 
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.dto.UserLikeDto;
 import com.applaudo.studios.moviestore.dto.UserRequestOrderDto;
 import com.applaudo.studios.moviestore.dto.UserRequestRentOrderDto;
-import com.applaudo.studios.moviestore.service.IStoreService;
+import com.applaudo.studios.moviestore.service.rest.IStoreService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name = "user_system", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "user_system", schema = "accion_finaltest")
 @Getter
 @Setter
 @EqualsAndHashCode

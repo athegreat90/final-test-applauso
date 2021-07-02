@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user_roles", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "user_roles", schema = "accion_finaltest")
 @IdClass(UserRolesPK.class)
 @Getter
 @Setter

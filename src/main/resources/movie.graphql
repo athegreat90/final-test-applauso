@@ -1,0 +1,49 @@
+schema
+{
+    query: Query
+}
+
+
+type Movie
+{
+    id: ID
+    name: String
+    description: String
+    stock: Int
+    rentalPrice: Float
+    salePrice: Float
+    availability: Boolean
+}
+
+input MovieInput
+{
+    id: ID
+    name: String!
+    description: String
+    stock: Int!
+    rentalPrice: Float!
+    salePrice: Float!
+    availability: Boolean
+}
+
+
+type ResponseGeneric
+{
+    code: Int!
+    message: String!
+}
+
+type Query
+{
+    movies: [Movie]!
+    movie(id: Int): Movie
+}
+
+# Root
+type Mutation
+{
+    createMovie(movie: MovieInput): ResponseGeneric!
+    updateMovie(id: ID!, movie: MovieInput): ResponseGeneric!
+    deleteMovie(id: ID!): ResponseGeneric!
+
+}

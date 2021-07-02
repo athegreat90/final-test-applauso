@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.repository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Repository
 @AllArgsConstructor
 public class RedisRepoImpl implements IRedisRepo
 {
-    private static final Logger logger = LoggerFactory.getLogger(RedisRepoImpl.class);
     public static final String REDIS_ERROR = "REDIS_ERROR";
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -24,7 +25,7 @@ public class RedisRepoImpl implements IRedisRepo
         Boolean result = Boolean.FALSE;
         try
         {
-            logger.debug("Redis Values - Key: {} - Content: {} - Duration: {}", key, content, duration);
+            log.debug("Redis Values - Key: {} - Content: {} - Duration: {}", key, content, duration);
             redisTemplate.opsForValue().set(key, content);
             redisTemplate.expire(key, duration.intValue(), TimeUnit.SECONDS);
 
@@ -32,7 +33,7 @@ public class RedisRepoImpl implements IRedisRepo
         }
         catch (Exception ex)
         {
-            logger.error(REDIS_ERROR, ex);
+            log.error(REDIS_ERROR, ex);
         }
         return result;
     }
@@ -44,11 +45,11 @@ public class RedisRepoImpl implements IRedisRepo
         try
         {
             result = (String) redisTemplate.opsForValue().get(key);
-            logger.debug("Redis Values - Key: {} - Content: {}", key, result);
+            log.debug("Redis Values - Key: {} - Content: {}", key, result);
         }
         catch (Exception ex)
         {
-            logger.error(REDIS_ERROR, ex);
+            log.error(REDIS_ERROR, ex);
         }
         return result;
     }
@@ -63,7 +64,7 @@ public class RedisRepoImpl implements IRedisRepo
         }
         catch (Exception ex)
         {
-            logger.error(REDIS_ERROR, ex);
+            log.error(REDIS_ERROR, ex);
         }
         return result;
     }

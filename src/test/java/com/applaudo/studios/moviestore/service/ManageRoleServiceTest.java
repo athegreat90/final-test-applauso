@@ -2,7 +2,11 @@ package com.applaudo.studios.moviestore.service;
 
 import com.applaudo.studios.moviestore.dto.RoleDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
+import com.applaudo.studios.moviestore.service.rest.IManageRoleService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,10 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(
         MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
+@Slf4j
 class ManageRoleServiceTest
 {
     @Autowired
     private IManageRoleService iManageRoleService;
+
+    @Autowired
+    ObjectMapper mapper;
 
     private Integer id;
 
@@ -26,6 +34,14 @@ class ManageRoleServiceTest
     void getRoles()
     {
         List<RoleDto> roles = this.iManageRoleService.getRoles();
+        try
+        {
+            log.info("{}", mapper.writeValueAsString(roles));
+        }
+        catch (JsonProcessingException e)
+        {
+            e.printStackTrace();
+        }
         assertNotNull(roles);
     }
 

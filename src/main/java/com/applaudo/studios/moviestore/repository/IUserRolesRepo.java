@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface IUserRolesRepo extends JpaRepository<UserRoles, UserRolesPK>
 {
-    @Query(value = "SELECT DISTINCT * from applauso.user_roles WHERE user_id = ?1", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT * from user_roles WHERE user_id = ?1", nativeQuery = true)
     List<UserRoles> findUserRolesByUserId(String id);
 }

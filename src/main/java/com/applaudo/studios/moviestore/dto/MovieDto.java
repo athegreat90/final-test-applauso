@@ -2,6 +2,7 @@ package com.applaudo.studios.moviestore.dto;
 
 import com.applaudo.studios.moviestore.entity.UserRent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,9 @@ public class MovieDto
     private Double salePrice;
 
     private Boolean availability;
-    private Collection<MovieXPicturesDto> movieXPicturesById;
+
+    @JsonProperty("pictures")
+    private Collection<MoviePictureDto> moviePicturesById;
 
     @JsonIgnore
     private Collection<UserRent> userRentsById;

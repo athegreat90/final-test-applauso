@@ -1,4 +1,4 @@
-package com.applaudo.studios.moviestore.service;
+package com.applaudo.studios.moviestore.service.rest;
 
 import com.applaudo.studios.moviestore.dto.RecoverPasswordDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;

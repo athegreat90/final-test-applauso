@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "movie_picture", schema = "applauso", catalog = "d456p442ibm71f")
+@Table(name = "movie_picture", schema = "accion_finaltest")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +23,12 @@ public class MoviePicture
     @Basic
     @Column(name = "url", nullable = false, length = 300)
     private String url;
-    @OneToMany(mappedBy = "moviePictureByIdPicture")
-    private Collection<MovieXPictures> movieXPicturesById;
+
+    @Basic
+    @Column(name = "movie_by_id_movie", nullable = true)
+    private Integer movieByIdMovie;
+
+    @ManyToOne
+    @JoinColumn(name = "id_movie", referencedColumnName = "id")
+    private Movie movieByIdMovie_0;
 }

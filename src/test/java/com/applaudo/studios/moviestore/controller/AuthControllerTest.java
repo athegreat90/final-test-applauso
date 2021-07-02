@@ -3,31 +3,44 @@ package com.applaudo.studios.moviestore.controller;
 import com.applaudo.studios.moviestore.dto.RecoverPasswordDto;
 import com.applaudo.studios.moviestore.dto.ResponseGenericDto;
 import com.applaudo.studios.moviestore.dto.UserSystemDto;
-import com.applaudo.studios.moviestore.entity.UserRoles;
-import com.applaudo.studios.moviestore.entity.UserSystem;
 import com.applaudo.studios.moviestore.repository.IRedisRepo;
 import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Slf4j
+@ExtendWith(MockitoExtension.class)
 class AuthControllerTest
 {
     @Autowired
@@ -42,6 +55,16 @@ class AuthControllerTest
     @Autowired
     IRedisRepo iRedisRepo;
 
+    @MockBean
+    private JavaMailSender javaMailSender;
+
+
+    @MockBean
+    RedisTemplate<String, Object> redisTemplate;
+
+    private @Mock RedisConnectionFactory connectionFactoryMock;
+    private @Mock RedisConnection redisConnectionMock;
+
     UserSystemDto body;
     ObjectMapper mapper;
 
@@ -53,8 +76,13 @@ class AuthControllerTest
         body.setPassword("password");
         body.setEmail("demo@gmail.com");
         body.setName("demo");
-
         mapper = new ObjectMapper();
+
+        redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactoryMock);
+        when(connectionFactoryMock.getConnection()).thenReturn(redisConnectionMock);
+
+        redisTemplate.afterPropertiesSet();
     }
 
     @Test
@@ -79,14 +107,6 @@ class AuthControllerTest
         String contentResponse = perform.andReturn().getResponse().getContentAsString();
         ResponseGenericDto<String> response = mapper.readValue(contentResponse, ResponseGenericDto.class);
         perform.andExpect(status().isOk());
-        assertNotNull(response.getBody());
-
-        List<UserRoles> userRolesByUserId = iUserRolesRepo.findUserRolesByUserId(body.getUsername());
-        System.out.println(mapper.writeValueAsString(userRolesByUserId.stream().map(UserRoles::getRoleId)));
-        iUserRolesRepo.deleteAll(userRolesByUserId);
-
-        Optional<UserSystem> userSystem = iUserSystemRepo.findById(body.getUsername());
-        iUserSystemRepo.delete(userSystem.get());
     }
 
     @Test
@@ -94,7 +114,11 @@ class AuthControllerTest
     @Order(3)
     void forgotPassword() throws Exception
     {
-        body.setUsername("demo1");
+        String jsonRegister = mapper.writeValueAsString(body);
+        var urlRegister = "/api/v1/auth/signup";
+        mockMvc.perform(post(urlRegister).content(jsonRegister).contentType(MediaType.APPLICATION_JSON));
+
+        body.setName("demo1");
         String json = mapper.writeValueAsString(body);
         var url = "/api/v1/auth/forgot";
         mockMvc.perform(post(url).content(json).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -105,8 +129,17 @@ class AuthControllerTest
     @Order(4)
     void recoverPassword() throws Exception
     {
+        String jsonRegister = mapper.writeValueAsString(body);
+        var urlRegister = "/api/v1/auth/signup";
+        mockMvc.perform(post(urlRegister).content(jsonRegister).contentType(MediaType.APPLICATION_JSON));
+
+        body.setName("demo1");
+        String jsonForgot = mapper.writeValueAsString(body);
+        var urlForgot = "/api/v1/auth/forgot";
+        mockMvc.perform(post(urlForgot).content(jsonForgot).contentType(MediaType.APPLICATION_JSON));
+
         var dto = new RecoverPasswordDto();
-        dto.setUsername("demo1");
+        dto.setNewPassword("password1");
         var key = String.format("%s_forgot_password", dto.getUsername());
         var content = this.iRedisRepo.getKey(key);
         dto.setToken(content);
