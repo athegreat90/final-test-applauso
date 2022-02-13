@@ -28,7 +28,7 @@ class MovieServiceImplTest
     TokenProvider jwtTokenUtil;
 
     @Test
-    @Order(1)
+    @Order(2)
     void getAll()
     {
         var movies = this.movieService.getAll();
@@ -36,7 +36,7 @@ class MovieServiceImplTest
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void getByCriteria()
     {
         var criteria = new CriteriaMovieDto();
@@ -51,7 +51,7 @@ class MovieServiceImplTest
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     void getByCriteria2()
     {
         var criteria = new CriteriaMovieDto();
@@ -67,7 +67,7 @@ class MovieServiceImplTest
 
 
     @Test
-    @Order(3)
+    @Order(5)
     void getById() throws NotFoundException
     {
         var movie = this.movieService.getById(1);
@@ -82,7 +82,7 @@ class MovieServiceImplTest
     }
 
     @Test
-    @Order(5)
+    @Order(1)
     void save()
     {
         var dto = new MovieDto();

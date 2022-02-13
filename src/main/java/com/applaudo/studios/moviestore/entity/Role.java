@@ -17,7 +17,7 @@ public class Role
 {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Basic
     @Column(name = "description", nullable = true, length = 200)

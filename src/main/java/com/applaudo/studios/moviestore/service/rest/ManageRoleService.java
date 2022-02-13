@@ -12,6 +12,7 @@ import com.applaudo.studios.moviestore.repository.IUserRolesRepo;
 import com.applaudo.studios.moviestore.repository.IUserSystemRepo;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ManageRoleService implements IManageRoleService
@@ -64,6 +66,8 @@ public class ManageRoleService implements IManageRoleService
     public Integer addRole(RoleDto body)
     {
         Role role = this.modelMapper.map(body, Role.class);
+        log.info("Dto: {}",body);
+        log.info("Entity: {}", role);
         role = this.iRoleRepo.save(role);
         return role.getId();
     }

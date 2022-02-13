@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.repository;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RedisRepoImpl implements IRedisRepo
 {
     public static final String REDIS_ERROR = "REDIS_ERROR";

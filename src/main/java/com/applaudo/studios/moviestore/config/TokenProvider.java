@@ -1,6 +1,7 @@
 package com.applaudo.studios.moviestore.config;
 
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.applaudo.studios.moviestore.util.Const.*;
 
+@Slf4j
 @Component
 public class TokenProvider implements Serializable
 {
@@ -59,12 +61,15 @@ public class TokenProvider implements Serializable
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    UsernamePasswordAuthenticationToken getAuthentication(final String token, final Authentication existingAuth, final UserDetails userDetails)
+    public UsernamePasswordAuthenticationToken getAuthentication(final String token, final Authentication existingAuth, final UserDetails userDetails)
     {
         final JwtParser jwtParser = Jwts.parser().setSigningKey(SIGNING_KEY);
         final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
         final Claims claims = claimsJws.getBody();
-        final Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+
+        String claimsString = claims.get(AUTHORITIES_KEY).toString();
+        log.info("Claims: {}", claimsString);
+        final Collection<? extends GrantedAuthority> authorities = Arrays.stream(claimsString.split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 }

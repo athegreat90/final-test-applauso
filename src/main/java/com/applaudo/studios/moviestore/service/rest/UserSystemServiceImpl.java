@@ -208,6 +208,7 @@ public class UserSystemServiceImpl implements UserDetailsService, IUserSystemSer
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException
     {
+        log.info("Username: {}", s);
         var optionalUserSystem = userSystemRepo.findById(s);
         if (optionalUserSystem.isEmpty())
         {

@@ -59,11 +59,11 @@ public class MovieServiceImpl implements IMovieService
         }
         // get the current hibernate session
         Session currentSession = entityManager.unwrap(Session.class);
-        var sql = "SELECT DISTINCT m.* FROM applauso.movie m ";
+        var sql = "SELECT DISTINCT m.* FROM accion_finaltest.movie m ";
 
         if (criteria.getLiked() != null)
         {
-            sql += "INNER JOIN applauso.user_movie_like uml ON uml.id_movie = m.id ";
+            sql += "INNER JOIN accion_finaltest.user_movie_like uml ON uml.id_movie = m.id ";
         }
 
         if (!StringUtils.isEmpty(criteria.getName()) || criteria.getMinPrice() != null || criteria.getMaxPrice() != null || criteria.getAvailability() != null || criteria.getLiked() != null)

@@ -1,6 +1,6 @@
-create schema ACCION_FINALTEST;
+create schema IF NOT EXISTS ACCION_FINALTEST;
 
-create table accion_finaltest.employee
+create table IF NOT EXISTS accion_finaltest.employee
 (
     id            int          not null
         primary key,
@@ -14,12 +14,12 @@ create table accion_finaltest.employee
     type_document varchar(2)   not null
 );
 
-create table accion_finaltest.hibernate_sequence
+create table IF NOT EXISTS accion_finaltest.hibernate_sequence
 (
     next_val bigint null
 );
 
-create table accion_finaltest.movie
+create table IF NOT EXISTS accion_finaltest.movie
 (
     id           int           not null
         primary key,
@@ -31,14 +31,14 @@ create table accion_finaltest.movie
     title        varchar(200)  not null
 );
 
-create table accion_finaltest.movie_picture
+create table IF NOT EXISTS accion_finaltest.movie_picture
 (
     id  int          not null
         primary key,
     url varchar(300) not null
 );
 
-create table accion_finaltest.movie_x_pictures
+create table IF NOT EXISTS accion_finaltest.movie_x_pictures
 (
     id         int not null
         primary key,
@@ -50,7 +50,7 @@ create table accion_finaltest.movie_x_pictures
         foreign key (id_picture) references accion_finaltest.movie_picture (id)
 );
 
-create table accion_finaltest.role
+create table IF NOT EXISTS accion_finaltest.role
 (
     id          int          not null
         primary key,
@@ -58,7 +58,7 @@ create table accion_finaltest.role
     name        varchar(50)  not null
 );
 
-create table accion_finaltest.user_system
+create table IF NOT EXISTS accion_finaltest.user_system
 (
     username varchar(50)  not null
         primary key,
@@ -67,7 +67,7 @@ create table accion_finaltest.user_system
     password varchar(200) not null
 );
 
-create table accion_finaltest.user_movie_like
+create table IF NOT EXISTS accion_finaltest.user_movie_like
 (
     id       int         not null
         primary key,
@@ -79,7 +79,7 @@ create table accion_finaltest.user_movie_like
         foreign key (id_movie) references accion_finaltest.movie (id)
 );
 
-create table accion_finaltest.user_order
+create table IF NOT EXISTS accion_finaltest.user_order
 (
     id       int         not null
         primary key,
@@ -92,7 +92,7 @@ create table accion_finaltest.user_order
         foreign key (username) references accion_finaltest.user_system (username)
 );
 
-create table accion_finaltest.user_rent
+create table IF NOT EXISTS accion_finaltest.user_rent
 (
     id         int         not null
         primary key,
@@ -106,7 +106,7 @@ create table accion_finaltest.user_rent
         foreign key (id_movie) references accion_finaltest.movie (id)
 );
 
-create table accion_finaltest.user_roles
+create table IF NOT EXISTS accion_finaltest.user_roles
 (
     user_id varchar(50) not null,
     role_id int         not null,
@@ -116,4 +116,3 @@ create table accion_finaltest.user_roles
     constraint FKrhfovtciq1l558cw6udg0h0d3
         foreign key (role_id) references accion_finaltest.role (id)
 );
-
