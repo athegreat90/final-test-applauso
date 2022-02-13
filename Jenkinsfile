@@ -1,9 +1,8 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.4-openjdk-17-slim'
-            args '-v /root/.m2:/root/.m2'
-        }
+    agent any
+    tools { 
+        maven 'Maven 3.8.4' 
+        jdk 'jdk17' 
     }
     options {
         skipStagesAfterUnstable()
